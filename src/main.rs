@@ -1,4 +1,4 @@
-use compass::coordinate;
+use geoms::coordinate;
 
 fn main() {
     let d2 = coordinate::Cooordinate::D2 { x: 1.0, y: 2.0 };

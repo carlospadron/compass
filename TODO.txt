@@ -1,1 +1,1 @@
-- continue wit functions equals2d
+- add cord macro
