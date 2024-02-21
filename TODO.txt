@@ -1,3 +1,1 @@
-- write docs (with examples) for coordinate
-- write tests for coordinate if needed
 - continue wit functions equals2d
