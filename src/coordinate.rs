@@ -369,7 +369,8 @@ impl Cooordinate {
     /// assert!(!coordinate1.equals_3d_with_tolerance(&coordinate2, 0.1));
     /// ```
     pub fn equals_3d_with_tolerance(&self, other: &Cooordinate, tolerance: f64) -> bool {
-        self.equals_2d_with_tolerance(other, tolerance) && (self.z() - other.z()).abs() - tolerance < f64::EPSILON
+        self.equals_2d_with_tolerance(other, tolerance) 
+        && (self.z() - other.z()).abs() - tolerance < f64::EPSILON
     }
 
     /// Checks if the z values of the 3D coordinates are equal within a given tolerance.
