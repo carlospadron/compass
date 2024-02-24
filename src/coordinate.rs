@@ -111,6 +111,130 @@ impl Cooordinate {
         }
     }
 
+    /// Returns a new coordinate with the updated x value.
+    ///
+    /// # Arguments
+    ///
+    /// * `self` - The coordinate.
+    /// * `new_x` - The new x value.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use geoms::coordinate::Cooordinate;
+    ///
+    /// let coordinate = Cooordinate::D2 { x: 1.0, y: 2.0 };
+    /// let new_coordinate = coordinate.set_x(3.0);
+    /// assert_eq!(new_coordinate.x(), 3.0);
+    /// assert_eq!(new_coordinate.y(), 2.0);
+    ///
+    /// let coordinate = Cooordinate::D3 { x: 3.0, y: 4.0, z: 5.0 };
+    /// let new_coordinate = coordinate.set_x(6.0);
+    /// assert_eq!(new_coordinate.x(), 6.0);
+    /// assert_eq!(new_coordinate.y(), 4.0);
+    /// assert_eq!(new_coordinate.z(), 5.0);
+    /// ```
+    pub fn set_x(&self, new_x: f64) -> Cooordinate {
+        match self {
+            Cooordinate::D2 { y, .. } => Cooordinate::D2 { x: new_x, y: *y },
+            Cooordinate::D3 { y, z, .. } => Cooordinate::D3 { x: new_x, y: *y, z: *z }
+        }
+    }
+    
+    /// Returns a new coordinate with the updated y value.
+    ///
+    /// # Arguments
+    ///
+    /// * `self` - The coordinate.
+    /// * `new_y` - The new y value.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use geoms::coordinate::Cooordinate;
+    ///
+    /// let coordinate = Cooordinate::D2 { x: 1.0, y: 2.0 };
+    /// let new_coordinate = coordinate.set_y(3.0);
+    /// assert_eq!(new_coordinate.x(), 1.0);
+    /// assert_eq!(new_coordinate.y(), 3.0);
+    ///
+    /// let coordinate = Cooordinate::D3 { x: 3.0, y: 4.0, z: 5.0 };
+    /// let new_coordinate = coordinate.set_y(6.0);
+    /// assert_eq!(new_coordinate.x(), 3.0);
+    /// assert_eq!(new_coordinate.y(), 6.0);
+    /// assert_eq!(new_coordinate.z(), 5.0);
+    /// ```
+    pub fn set_y(&self, new_y: f64) -> Cooordinate {
+        match self {
+            Cooordinate::D2 { x, .. } => Cooordinate::D2 { x: *x, y: new_y },
+            Cooordinate::D3 { x, z, .. } => Cooordinate::D3 { x: *x, y: new_y, z: *z }
+        }
+    }
+    
+    /// Returns a new coordinate with the updated z value.
+    ///
+    /// # Arguments
+    ///
+    /// * `self` - The coordinate.
+    /// * `new_z` - The new z value.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use geoms::coordinate::Cooordinate;
+    ///
+    /// let coordinate = Cooordinate::D3 { x: 1.0, y: 2.0, z: 3.0 };
+    /// let new_coordinate = coordinate.set_z(4.0);
+    /// assert_eq!(new_coordinate.x(), 1.0);
+    /// assert_eq!(new_coordinate.y(), 2.0);
+    /// assert_eq!(new_coordinate.z(), 4.0);
+    ///
+    /// let coordinate = Cooordinate::D2 { x: 1.0, y: 2.0 };
+    /// let new_coordinate = coordinate.set_z(4.0);
+    /// assert_eq!(new_coordinate.x(), 1.0);
+    /// assert_eq!(new_coordinate.y(), 2.0);
+    /// assert_eq!(new_coordinate.z(), 4.0);    
+    /// ```
+    pub fn set_z(&self, new_z: f64) -> Cooordinate {
+        match self {
+            Cooordinate::D2 { x, y } => Cooordinate::D3 { x: *x, y: *y, z: new_z },
+            Cooordinate::D3 { x, y, .. } => Cooordinate::D3 { x: *x, y: *y, z: new_z },
+        }
+    }
+
+    /// Returns a new coordinate with the updated ordinate value.
+    ///
+    /// # Arguments
+    ///
+    /// * `self` - The coordinate.
+    /// * `ordinate` - The index of the ordinate.
+    /// * `new_value` - The new value of the ordinate.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use geoms::coordinate::Cooordinate;
+    ///
+    /// let coordinate = Cooordinate::D2 { x: 1.0, y: 2.0 };
+    /// let new_coordinate = coordinate.set_ordinate(0, 3.0);
+    /// assert_eq!(new_coordinate.x(), 3.0);
+    /// assert_eq!(new_coordinate.y(), 2.0);
+    ///
+    /// let coordinate = Cooordinate::D3 { x: 3.0, y: 4.0, z: 5.0 };
+    /// let new_coordinate = coordinate.set_ordinate(2, 6.0);
+    /// assert_eq!(new_coordinate.x(), 3.0);
+    /// assert_eq!(new_coordinate.y(), 4.0);
+    /// assert_eq!(new_coordinate.z(), 6.0);
+    /// ```
+    pub fn set_ordinate(&self, ordinate: usize, new_value: f64) -> Cooordinate {
+        match ordinate {
+            0 => self.set_x(new_value),
+            1 => self.set_y(new_value),
+            2 => self.set_z(new_value),
+            _ => panic!("Invalid ordinate index")
+        }
+    }    
+
     /// Checks if the coordinate values are valid, meaning they are finite.
     ///
     /// # Arguments
@@ -220,7 +344,32 @@ impl Cooordinate {
     /// assert!(!coordinate1.equals_3d(&coordinate2));
     /// ```
     pub fn equals_3d(&self, other: &Cooordinate) -> bool {
-        self.x() == other.x() && self.y() == other.y() && self.z() == other.z()
+        self.equals_2d(other) && self.z() == other.z()
+    }
+
+    /// Checks if the 3D coordinates are equal within a given tolerance.
+    ///
+    /// # Arguments
+    ///
+    /// * `self` - The first coordinate.
+    /// * `other` - The second coordinate.
+    /// * `tolerance` - The maximum allowed difference between the coordinates' values.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use geoms::coordinate::Cooordinate;
+    ///
+    /// let coordinate1 = Cooordinate::D3 { x: 1.0, y: 2.0, z: 3.0 };
+    /// let coordinate2 = Cooordinate::D3 { x: 1.01, y: 2.02, z: 3.03 };
+    /// assert!(coordinate1.equals_3d_with_tolerance(&coordinate2, 0.1));
+    ///
+    /// let coordinate1 = Cooordinate::D3 { x: 1.0, y: 2.0, z: 3.0 };
+    /// let coordinate2 = Cooordinate::D3 { x: 3.0, y: 4.0, z: 5.0 };
+    /// assert!(!coordinate1.equals_3d_with_tolerance(&coordinate2, 0.1));
+    /// ```
+    pub fn equals_3d_with_tolerance(&self, other: &Cooordinate, tolerance: f64) -> bool {
+        self.equals_2d_with_tolerance(other, tolerance) && (self.z() - other.z()).abs() <= tolerance
     }
 
 }
