@@ -1,9 +1,9 @@
 /// Represents a coordinate in either 2D or 3D space.
 pub enum Cooordinate {
     /// Represents a 2D coordinate with x and y values.
-    D2 { x: f32, y: f32 },
+    D2 { x: f64, y: f64 },
     /// Represents a 3D coordinate with x, y, and z values.
-    D3 { x: f32, y: f32, z: f32 }
+    D3 { x: f64, y: f64, z: f64 }
 }
 
 impl Cooordinate {
@@ -25,7 +25,7 @@ impl Cooordinate {
     /// let coordinate = Cooordinate::D3 { x: 3.0, y: 4.0, z: 5.0 };
     /// assert_eq!(coordinate.x(), 3.0);
     /// ```
-    pub fn x(&self) -> f32 {
+    pub fn x(&self) -> f64 {
         match self {
             Cooordinate::D2 { x, .. } => *x,
             Cooordinate::D3 { x, .. } => *x
@@ -49,7 +49,7 @@ impl Cooordinate {
     /// let coordinate = Cooordinate::D3 { x: 3.0, y: 4.0, z: 5.0 };
     /// assert_eq!(coordinate.y(), 4.0);
     /// ```
-    pub fn y(&self) -> f32 {
+    pub fn y(&self) -> f64 {
         match self {
             Cooordinate::D2 { y, .. } => *y,
             Cooordinate::D3 { y, .. } => *y
@@ -74,7 +74,7 @@ impl Cooordinate {
     /// let coordinate = Cooordinate::D3 { x: 3.0, y: 4.0, z: 5.0 };
     /// assert_eq!(coordinate.z(), 5.0);
     /// ```
-    pub fn z(&self) -> f32 {
+    pub fn z(&self) -> f64 {
         match self {
             Cooordinate::D3 { z, .. } => *z,
             _ => 0.0
@@ -102,7 +102,7 @@ impl Cooordinate {
     /// assert_eq!(coordinate.get_ordinate(1), 4.0);
     /// assert_eq!(coordinate.get_ordinate(2), 5.0);
     /// ```
-    pub fn get_ordinate(&self, ordinate: usize) -> f32 {
+    pub fn get_ordinate(&self, ordinate: usize) -> f64 {
         match ordinate {
             0 => self.x(),
             1 => self.y(),
@@ -134,7 +134,7 @@ impl Cooordinate {
     /// assert_eq!(new_coordinate.y(), 4.0);
     /// assert_eq!(new_coordinate.z(), 5.0);
     /// ```
-    pub fn set_x(&self, new_x: f32) -> Cooordinate {
+    pub fn set_x(&self, new_x: f64) -> Cooordinate {
         match self {
             Cooordinate::D2 { y, .. } => Cooordinate::D2 { x: new_x, y: *y },
             Cooordinate::D3 { y, z, .. } => Cooordinate::D3 { x: new_x, y: *y, z: *z }
@@ -164,7 +164,7 @@ impl Cooordinate {
     /// assert_eq!(new_coordinate.y(), 6.0);
     /// assert_eq!(new_coordinate.z(), 5.0);
     /// ```
-    pub fn set_y(&self, new_y: f32) -> Cooordinate {
+    pub fn set_y(&self, new_y: f64) -> Cooordinate {
         match self {
             Cooordinate::D2 { x, .. } => Cooordinate::D2 { x: *x, y: new_y },
             Cooordinate::D3 { x, z, .. } => Cooordinate::D3 { x: *x, y: new_y, z: *z }
@@ -195,7 +195,7 @@ impl Cooordinate {
     /// assert_eq!(new_coordinate.y(), 2.0);
     /// assert_eq!(new_coordinate.z(), 4.0);    
     /// ```
-    pub fn set_z(&self, new_z: f32) -> Cooordinate {
+    pub fn set_z(&self, new_z: f64) -> Cooordinate {
         match self {
             Cooordinate::D2 { x, y } => Cooordinate::D3 { x: *x, y: *y, z: new_z },
             Cooordinate::D3 { x, y, .. } => Cooordinate::D3 { x: *x, y: *y, z: new_z },
@@ -226,7 +226,7 @@ impl Cooordinate {
     /// assert_eq!(new_coordinate.y(), 4.0);
     /// assert_eq!(new_coordinate.z(), 6.0);
     /// ```
-    pub fn set_ordinate(&self, ordinate: usize, new_value: f32) -> Cooordinate {
+    pub fn set_ordinate(&self, ordinate: usize, new_value: f64) -> Cooordinate {
         match ordinate {
             0 => self.set_x(new_value),
             1 => self.set_y(new_value),
@@ -252,10 +252,10 @@ impl Cooordinate {
     /// let coordinate = Cooordinate::D3 { x: 3.0, y: 4.0, z: 5.0 };
     /// assert!(coordinate.is_valid());
     ///
-    /// let coordinate = Cooordinate::D2 { x: f32::INFINITY, y: 2.0 };
+    /// let coordinate = Cooordinate::D2 { x: f64::INFINITY, y: 2.0 };
     /// assert!(!coordinate.is_valid());
     /// 
-    /// let coordinate = Cooordinate::D3 { x: 3.0, y: f32::NAN, z: 5.0 };
+    /// let coordinate = Cooordinate::D3 { x: 3.0, y: f64::NAN, z: 5.0 };
     /// assert!(!coordinate.is_valid());    
     /// ```
     pub fn is_valid(&self) -> bool {
@@ -318,9 +318,9 @@ impl Cooordinate {
     /// let coordinate2 = Cooordinate::D3 { x: 1.0, y: 2.0, z: 3.1 };
     /// assert!(coordinate1.equals_2d_with_tolerance(&coordinate2, 0.1));
     /// ```
-    pub fn equals_2d_with_tolerance(&self, other: &Cooordinate, tolerance: f32) -> bool {
-        (self.x() - other.x()).abs() <= tolerance 
-        && (self.y() - other.y()).abs() <= tolerance
+    pub fn equals_2d_with_tolerance(&self, other: &Cooordinate, tolerance: f64) -> bool {
+        (self.x() - other.x()).abs() - tolerance < f64::EPSILON
+        && (self.y() - other.y()).abs() - tolerance < f64::EPSILON
     }
 
     /// Checks if the 3D coordinates are equal.
@@ -368,8 +368,8 @@ impl Cooordinate {
     /// let coordinate2 = Cooordinate::D3 { x: 3.0, y: 4.0, z: 5.0 };
     /// assert!(!coordinate1.equals_3d_with_tolerance(&coordinate2, 0.1));
     /// ```
-    pub fn equals_3d_with_tolerance(&self, other: &Cooordinate, tolerance: f32) -> bool {
-        self.equals_2d_with_tolerance(other, tolerance) && (self.z() - other.z()).abs() <= tolerance
+    pub fn equals_3d_with_tolerance(&self, other: &Cooordinate, tolerance: f64) -> bool {
+        self.equals_2d_with_tolerance(other, tolerance) && (self.z() - other.z()).abs() - tolerance < f64::EPSILON
     }
 
     /// Checks if the z values of the 3D coordinates are equal within a given tolerance.
@@ -393,7 +393,7 @@ impl Cooordinate {
     /// let coordinate2 = Cooordinate::D3 { x: 2.0, y: 1.0, z: 4.0 };
     /// assert!(!coordinate1.equals_in_z(&coordinate2, 0.1));
     /// ```
-    pub fn equals_in_z(&self, other: &Cooordinate, tolerance: f32) -> bool {
-        (self.z() - other.z()).abs() <= tolerance
+    pub fn equals_in_z(&self, other: &Cooordinate, tolerance: f64) -> bool {
+        (self.z() - other.z()).abs() - tolerance < f64::EPSILON
     }
 }
