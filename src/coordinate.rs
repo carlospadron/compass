@@ -1,3 +1,4 @@
+use std::cmp::PartialEq;
 /// Represents a coordinate in either 2D or 3D space.
 #[derive(Debug)]
 pub enum Coordinate {
@@ -422,8 +423,6 @@ impl Coordinate {
     }
  }
 
-
-use std::cmp::PartialEq;
 /// Implements the `PartialEq` trait for the `Coordinate` struct.
 /// This allows for comparing two `Coordinate` instances for equality.
 impl PartialEq for Coordinate {
