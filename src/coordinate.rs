@@ -1,14 +1,57 @@
 use std::cmp::PartialEq;
-/// Represents a coordinate in either 2D or 3D space.
+use std::fmt;
+
+/// Represents a coordinate in 3D space.
+
 #[derive(Debug)]
-pub enum Coordinate {
-    /// Represents a 2D coordinate with x and y values.
-    TwoDim { x: f64, y: f64 },
-    /// Represents a 3D coordinate with x, y, and z values.
-    ThreeDim { x: f64, y: f64, z: f64 }
+pub struct Coordinate {
+    /// The x value of the coordinate.
+    x: f64,
+    /// The y value of the coordinate.
+    y: f64,
+    /// The z value of the coordinate.
+    z: f64
 }
 
 impl Coordinate {
+    /// Creates a new coordinate.
+    ///
+    /// # Arguments
+    ///
+    /// * `x` - The x value of the coordinate.
+    /// * `y` - The y value of the coordinate.
+    /// * `z` - The z value of the coordinate.
+    ///
+    /// # Examples
+    ///
+    /// ```should_panic
+    /// use geoms::coordinate::Coordinate;
+    /// 
+    /// Coordinate::new(3.0, f64::NAN, 5.0);
+    /// ```
+    ///
+    /// ```should_panic
+    /// use geoms::coordinate::Coordinate;
+    /// 
+    /// Coordinate::new(3.0, f64::INFINITY, 5.0);
+    /// ```    
+    ///
+    /// ```
+    /// use geoms::coordinate::Coordinate;
+    /// 
+    /// Coordinate::new(3.0, 7.0, 5.0);
+    /// ```    
+    
+    pub fn new(x: f64, y: f64, z: f64) -> Coordinate {
+        if x.is_nan() || y.is_nan() || z.is_nan() {
+            panic!("Coordinate values cannot be NaN");
+        }
+        else if x.is_infinite() || y.is_infinite() || z.is_infinite() {
+            panic!("Coordinate values cannot be infinite");
+            
+        }
+        Coordinate { x, y, z }
+    }
 
     /// Returns the x value of the coordinate.
     ///
@@ -21,17 +64,11 @@ impl Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coordinate = Coordinate::TwoDim { x: 1.0, y: 2.0 };
-    /// assert_eq!(coordinate.x(), 1.0);
-    ///
-    /// let coordinate = Coordinate::ThreeDim { x: 3.0, y: 4.0, z: 5.0 };
+    /// let coordinate = Coordinate::new(3.0, 4.0, 5.0);
     /// assert_eq!(coordinate.x(), 3.0);
     /// ```
     pub fn x(&self) -> f64 {
-        match self {
-            Coordinate::TwoDim { x, .. } => *x,
-            Coordinate::ThreeDim { x, .. } => *x
-        }
+        self.x
     }
 
     /// Returns the y value of the coordinate.
@@ -45,17 +82,11 @@ impl Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coordinate = Coordinate::TwoDim { x: 1.0, y: 2.0 };
-    /// assert_eq!(coordinate.y(), 2.0);
-    ///
-    /// let coordinate = Coordinate::ThreeDim { x: 3.0, y: 4.0, z: 5.0 };
+    /// let coordinate = Coordinate::new(3.0, 4.0, 5.0);
     /// assert_eq!(coordinate.y(), 4.0);
     /// ```
     pub fn y(&self) -> f64 {
-        match self {
-            Coordinate::TwoDim { y, .. } => *y,
-            Coordinate::ThreeDim { y, .. } => *y
-        }
+        self.y
     }
 
     /// Returns the z value of the coordinate.
@@ -70,17 +101,11 @@ impl Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coordinate = Coordinate::TwoDim { x: 1.0, y: 2.0 };
-    /// assert_eq!(coordinate.z(), 0.0);
-    ///
-    /// let coordinate = Coordinate::ThreeDim { x: 3.0, y: 4.0, z: 5.0 };
+    /// let coordinate = Coordinate::new(3.0, 4.0, 5.0);
     /// assert_eq!(coordinate.z(), 5.0);
     /// ```
     pub fn z(&self) -> f64 {
-        match self {
-            Coordinate::ThreeDim { z, .. } => *z,
-            _ => 0.0
-        }
+        self.z
     }
 
     /// Returns the ordinate value of the coordinate.
@@ -95,11 +120,8 @@ impl Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coordinate = Coordinate::TwoDim { x: 1.0, y: 2.0 };
-    /// assert_eq!(coordinate.get_ordinate(0), 1.0);
-    /// assert_eq!(coordinate.get_ordinate(1), 2.0);
     ///
-    /// let coordinate = Coordinate::ThreeDim { x: 3.0, y: 4.0, z: 5.0 };
+    /// let coordinate = Coordinate::new(3.0, 4.0, 5.0);
     /// assert_eq!(coordinate.get_ordinate(0), 3.0);
     /// assert_eq!(coordinate.get_ordinate(1), 4.0);
     /// assert_eq!(coordinate.get_ordinate(2), 5.0);
@@ -125,22 +147,14 @@ impl Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coordinate = Coordinate::TwoDim { x: 1.0, y: 2.0 };
-    /// let new_coordinate = coordinate.set_x(3.0);
-    /// assert_eq!(new_coordinate.x(), 3.0);
-    /// assert_eq!(new_coordinate.y(), 2.0);
-    ///
-    /// let coordinate = Coordinate::ThreeDim { x: 3.0, y: 4.0, z: 5.0 };
+    /// let coordinate = Coordinate::new(3.0, 4.0, 5.0);
     /// let new_coordinate = coordinate.set_x(6.0);
     /// assert_eq!(new_coordinate.x(), 6.0);
     /// assert_eq!(new_coordinate.y(), 4.0);
     /// assert_eq!(new_coordinate.z(), 5.0);
     /// ```
     pub fn set_x(&self, new_x: f64) -> Coordinate {
-        match self {
-            Coordinate::TwoDim { y, .. } => Coordinate::TwoDim { x: new_x, y: *y },
-            Coordinate::ThreeDim { y, z, .. } => Coordinate::ThreeDim { x: new_x, y: *y, z: *z }
-        }
+        Coordinate::new(new_x, self.y(), self.z())
     }
     
     /// Returns a new coordinate with the updated y value.
@@ -155,22 +169,14 @@ impl Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coordinate = Coordinate::TwoDim { x: 1.0, y: 2.0 };
-    /// let new_coordinate = coordinate.set_y(3.0);
-    /// assert_eq!(new_coordinate.x(), 1.0);
-    /// assert_eq!(new_coordinate.y(), 3.0);
-    ///
-    /// let coordinate = Coordinate::ThreeDim { x: 3.0, y: 4.0, z: 5.0 };
+    /// let coordinate = Coordinate::new(3.0, 4.0, 5.0);
     /// let new_coordinate = coordinate.set_y(6.0);
     /// assert_eq!(new_coordinate.x(), 3.0);
     /// assert_eq!(new_coordinate.y(), 6.0);
     /// assert_eq!(new_coordinate.z(), 5.0);
     /// ```
     pub fn set_y(&self, new_y: f64) -> Coordinate {
-        match self {
-            Coordinate::TwoDim { x, .. } => Coordinate::TwoDim { x: *x, y: new_y },
-            Coordinate::ThreeDim { x, z, .. } => Coordinate::ThreeDim { x: *x, y: new_y, z: *z }
-        }
+        Coordinate::new(self.x(), new_y, self.z())
     }
     
     /// Returns a new coordinate with the updated z value.
@@ -185,23 +191,14 @@ impl Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coordinate = Coordinate::ThreeDim { x: 1.0, y: 2.0, z: 3.0 };
+    /// let coordinate = Coordinate::new(3.0, 4.0, 5.0);
     /// let new_coordinate = coordinate.set_z(4.0);
-    /// assert_eq!(new_coordinate.x(), 1.0);
-    /// assert_eq!(new_coordinate.y(), 2.0);
-    /// assert_eq!(new_coordinate.z(), 4.0);
-    ///
-    /// let coordinate = Coordinate::TwoDim { x: 1.0, y: 2.0 };
-    /// let new_coordinate = coordinate.set_z(4.0);
-    /// assert_eq!(new_coordinate.x(), 1.0);
-    /// assert_eq!(new_coordinate.y(), 2.0);
+    /// assert_eq!(new_coordinate.x(), 3.0);
+    /// assert_eq!(new_coordinate.y(), 4.0);
     /// assert_eq!(new_coordinate.z(), 4.0);    
     /// ```
     pub fn set_z(&self, new_z: f64) -> Coordinate {
-        match self {
-            Coordinate::TwoDim { x, y } => Coordinate::ThreeDim { x: *x, y: *y, z: new_z },
-            Coordinate::ThreeDim { x, y, .. } => Coordinate::ThreeDim { x: *x, y: *y, z: new_z },
-        }
+        Coordinate::new(self.x(), self.y(), new_z)
     }
 
     /// Returns a new coordinate with the updated ordinate value.
@@ -217,12 +214,7 @@ impl Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coordinate = Coordinate::TwoDim { x: 1.0, y: 2.0 };
-    /// let new_coordinate = coordinate.set_ordinate(0, 3.0);
-    /// assert_eq!(new_coordinate.x(), 3.0);
-    /// assert_eq!(new_coordinate.y(), 2.0);
-    ///
-    /// let coordinate = Coordinate::ThreeDim { x: 3.0, y: 4.0, z: 5.0 };
+    /// let coordinate = Coordinate::new(3.0, 4.0, 5.0);
     /// let new_coordinate = coordinate.set_ordinate(2, 6.0);
     /// assert_eq!(new_coordinate.x(), 3.0);
     /// assert_eq!(new_coordinate.y(), 4.0);
@@ -237,36 +229,6 @@ impl Coordinate {
         }
     }    
 
-    /// Checks if the coordinate values are valid, meaning they are finite.
-    ///
-    /// # Arguments
-    ///
-    /// * `self` - The coordinate.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use geoms::coordinate::Coordinate;
-    ///
-    /// let coordinate = Coordinate::TwoDim { x: 1.0, y: 2.0 };
-    /// assert!(coordinate.is_valid());
-    ///
-    /// let coordinate = Coordinate::ThreeDim { x: 3.0, y: 4.0, z: 5.0 };
-    /// assert!(coordinate.is_valid());
-    ///
-    /// let coordinate = Coordinate::TwoDim { x: f64::INFINITY, y: 2.0 };
-    /// assert!(!coordinate.is_valid());
-    /// 
-    /// let coordinate = Coordinate::ThreeDim { x: 3.0, y: f64::NAN, z: 5.0 };
-    /// assert!(!coordinate.is_valid());    
-    /// ```
-    pub fn is_valid(&self) -> bool {
-        match self {
-            Coordinate::TwoDim { x, y } => x.is_finite() && y.is_finite(),
-            Coordinate::ThreeDim { x, y, z } => x.is_finite() && y.is_finite() && z.is_finite()
-        }
-    }
-
     /// Returns whether the planar projections of the two coordinates are equal.
     ///
     /// # Arguments
@@ -279,17 +241,13 @@ impl Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coordinate1 = Coordinate::TwoDim { x: 1.0, y: 2.0 };
-    /// let coordinate2 = Coordinate::TwoDim { x: 1.0, y: 2.0 };
+    /// let coordinate1 = Coordinate::new(1.0, 2.0, 5.0);
+    /// let coordinate2 = Coordinate::new(1.0, 2.0, 3.0);
     /// assert!(coordinate1.equals_2d(&coordinate2));
     ///
-    /// let coordinate1 = Coordinate::TwoDim { x: 1.0, y: 2.0 };
-    /// let coordinate2 = Coordinate::TwoDim { x: 3.0, y: 4.0 };
+    /// let coordinate1 = Coordinate::new(1.0, 2.0, 3.0);
+    /// let coordinate2 = Coordinate::new(3.0, 4.0, 5.0);
     /// assert!(!coordinate1.equals_2d(&coordinate2));
-    ///
-    /// let coordinate1 = Coordinate::ThreeDim { x: 1.0, y: 2.0, z: 3.0 };
-    /// let coordinate2 = Coordinate::ThreeDim { x: 1.0, y: 2.0, z: 4.0 };
-    /// assert!(coordinate1.equals_2d(&coordinate2));
     /// ```
     pub fn equals_2d(&self, other: &Coordinate) -> bool {
         self.x() == other.x() && self.y() == other.y()
@@ -308,24 +266,20 @@ impl Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coordinate1 = Coordinate::TwoDim { x: 1.0, y: 2.0 };
-    /// let coordinate2 = Coordinate::TwoDim { x: 1.01, y: 2.02 };
+    /// let coordinate1 = Coordinate::new(1.0, 2.0, 5.0);
+    /// let coordinate2 = Coordinate::new(1.0, 2.02, 3.0);
     /// assert!(coordinate1.equals_2d_with_tolerance(&coordinate2, 0.1));
     ///
-    /// let coordinate1 = Coordinate::TwoDim { x: 1.0, y: 2.0 };
-    /// let coordinate2 = Coordinate::TwoDim { x: 3.0, y: 4.0 };
+    /// let coordinate1 = Coordinate::new(1.0, 2.0, 5.0);
+    /// let coordinate2 = Coordinate::new(3.0, 4.0, 5.0);
     /// assert!(!coordinate1.equals_2d_with_tolerance(&coordinate2, 0.1));
-    /// 
-    /// let coordinate1 = Coordinate::ThreeDim { x: 1.0, y: 2.0, z: 3.0 };
-    /// let coordinate2 = Coordinate::ThreeDim { x: 1.0, y: 2.0, z: 3.1 };
-    /// assert!(coordinate1.equals_2d_with_tolerance(&coordinate2, 0.1));
     /// ```
     pub fn equals_2d_with_tolerance(&self, other: &Coordinate, tolerance: f64) -> bool {
         (self.x() - other.x()).abs() - tolerance < f64::EPSILON
         && (self.y() - other.y()).abs() - tolerance < f64::EPSILON
     }
 
-    /// Checks if the 3D coordinates are equal.
+    /// Checks if the coordinates are equal.
     ///
     /// # Arguments
     ///
@@ -337,19 +291,19 @@ impl Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coordinate1 = Coordinate::ThreeDim { x: 1.0, y: 2.0, z: 3.0 };
-    /// let coordinate2 = Coordinate::ThreeDim { x: 1.0, y: 2.0, z: 3.0 };
-    /// assert!(coordinate1.equals_3d(&coordinate2));
+    /// let coordinate1 = Coordinate::new(1.0, 2.0, 3.0);
+    /// let coordinate2 = Coordinate::new(1.0, 2.0, 3.0);
+    /// assert!(coordinate1.equals(&coordinate2));
     ///
-    /// let coordinate1 = Coordinate::ThreeDim { x: 1.0, y: 2.0, z: 3.0 };
-    /// let coordinate2 = Coordinate::ThreeDim { x: 3.0, y: 4.0, z: 5.0 };
-    /// assert!(!coordinate1.equals_3d(&coordinate2));
+    /// let coordinate1 = Coordinate::new(1.0, 2.0, 3.0);
+    /// let coordinate2 = Coordinate::new(3.0, 2.0, 3.0);
+    /// assert!(!coordinate1.equals(&coordinate2));
     /// ```
-    pub fn equals_3d(&self, other: &Coordinate) -> bool {
+    pub fn equals(&self, other: &Coordinate) -> bool {
         self.equals_2d(other) && self.z() == other.z()
     }
 
-    /// Checks if the 3D coordinates are equal within a given tolerance.
+    /// Checks if the coordinates are equal within a given tolerance.
     ///
     /// # Arguments
     ///
@@ -362,20 +316,20 @@ impl Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coordinate1 = Coordinate::ThreeDim { x: 1.0, y: 2.0, z: 3.0 };
-    /// let coordinate2 = Coordinate::ThreeDim { x: 1.01, y: 2.02, z: 3.03 };
-    /// assert!(coordinate1.equals_3d_with_tolerance(&coordinate2, 0.1));
+    /// let coordinate1 = Coordinate::new(1.0, 2.0, 3.0);
+    /// let coordinate2 = Coordinate::new(1.0, 2.02, 3.02);
+    /// assert!(coordinate1.equals_with_tolerance(&coordinate2, 0.1));
     ///
-    /// let coordinate1 = Coordinate::ThreeDim { x: 1.0, y: 2.0, z: 3.0 };
-    /// let coordinate2 = Coordinate::ThreeDim { x: 3.0, y: 4.0, z: 5.0 };
-    /// assert!(!coordinate1.equals_3d_with_tolerance(&coordinate2, 0.1));
+    /// let coordinate1 = Coordinate::new(1.0, 2.0, 3.0);
+    /// let coordinate2 = Coordinate::new(3.0, 4.0, 5.0);
+    /// assert!(!coordinate1.equals_with_tolerance(&coordinate2, 0.1));
     /// ```
-    pub fn equals_3d_with_tolerance(&self, other: &Coordinate, tolerance: f64) -> bool {
+    pub fn equals_with_tolerance(&self, other: &Coordinate, tolerance: f64) -> bool {
         self.equals_2d_with_tolerance(other, tolerance) 
         && (self.z() - other.z()).abs() - tolerance < f64::EPSILON
     }
 
-    /// Checks if the z values of the 3D coordinates are equal within a given tolerance.
+    /// Checks if the z values of the coordinates are equal within a given tolerance.
     ///
     /// # Arguments
     ///
@@ -388,18 +342,21 @@ impl Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coordinate1 = Coordinate::ThreeDim { x: 1.0, y: 2.0, z: 3.0 };
-    /// let coordinate2 = Coordinate::ThreeDim { x: 2.0, y: 1.0, z: 3.1 };
-    /// assert!(coordinate1.equals_in_z(&coordinate2, 0.1));
+    /// let coordinate1 = Coordinate::new(1.0, 2.0, 3.0);
+    /// let coordinate2 = Coordinate::new(1.0, 2.0, 3.1);
+    /// assert!(coordinate1.equals_in_z_with_tolerance(&coordinate2, 0.1));
     ///
-    /// let coordinate1 = Coordinate::ThreeDim { x: 1.0, y: 2.0, z: 3.0 };
-    /// let coordinate2 = Coordinate::ThreeDim { x: 2.0, y: 1.0, z: 4.0 };
-    /// assert!(!coordinate1.equals_in_z(&coordinate2, 0.1));
+    /// let coordinate1 = Coordinate::new(1.0, 2.0, 3.0);
+    /// let coordinate2 = Coordinate::new(1.0, 2.0, 4.0);
+    /// assert!(!coordinate1.equals_in_z_with_tolerance(&coordinate2, 0.1));
     /// ```
-    pub fn equals_in_z(&self, other: &Coordinate, tolerance: f64) -> bool {
+    pub fn equals_in_z_with_tolerance(&self, other: &Coordinate, tolerance: f64) -> bool {
         (self.z() - other.z()).abs() - tolerance < f64::EPSILON
     }
 
+ }
+
+ impl fmt::Display for Coordinate {
     /// Returns the string representation of the coordinate.
     ///
     /// # Arguments
@@ -411,17 +368,14 @@ impl Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coordinate = Coordinate::TwoDim { x: 1.0, y: 2.0 };
-    /// assert_eq!(coordinate.to_string(), "(1, 2, 0)");
-    ///
-    /// let coordinate = Coordinate::ThreeDim { x: 3.0, y: 4.0, z: 5.0 };
-    /// assert_eq!(coordinate.to_string(), "(3, 4, 5)");
+    /// let coordinate = Coordinate::new(1.0, 2.0, 3.0);
+    /// assert_eq!(coordinate.to_string(), "(1, 2, 3)");
     /// ```
-    pub fn to_string(&self) -> String {
-        format!("({}, {}, {})", self.x(), self.y(), self.z())
 
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({}, {}, {})", self.x(), self.y(), self.z())
     }
- }
+}
 
 /// Implements the `PartialEq` trait for the `Coordinate` struct.
 /// This allows for comparing two `Coordinate` instances for equality.
@@ -437,18 +391,13 @@ impl PartialEq for Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coord1 = Coordinate::ThreeDim {x: 1.0, y: 2.0, z: 3.0};
-    /// let coord2 = Coordinate::ThreeDim {x: 1.0, y: 2.0, z: 3.0};
+    /// let coord1 = Coordinate::new(1.0, 2.0, 3.0);
+    /// let coord2 = Coordinate::new(1.0, 2.0, 3.0);
     ///
-    /// assert!(coord1 == coord2);
-    ///
-    /// let coord1 = Coordinate::ThreeDim {x: 1.0, y: 2.0, z: 0.0};
-    /// let coord2 = Coordinate::TwoDim {x: 1.0, y: 2.0};
-    ///
-    /// assert!(coord1 == coord2);    
+    /// assert!(coord1 == coord2);   
     /// ```
     fn eq(&self, other: &Self) -> bool {
-        self.equals_3d(other)
+        self.equals(other)
     }
 
     /// Compares two `Coordinate` instances for inequality.
@@ -462,13 +411,13 @@ impl PartialEq for Coordinate {
     /// ```
     /// use geoms::coordinate::Coordinate;
     ///
-    /// let coord1 = Coordinate::ThreeDim {x: 1.0, y: 2.0, z: 3.0};
-    /// let coord2 = Coordinate::ThreeDim {x: 1.0, y: 5.0, z: 3.0};
+    /// let coord1 = Coordinate::new(1.0, 2.0, 3.0);
+    /// let coord2 = Coordinate::new(1.0, 5.0, 3.0);
     ///
     /// assert!(coord1 != coord2);
     /// ```
     fn ne(&self, other: &Self) -> bool {
-        !self.equals_3d(other)
+        !self.equals(other)
     }
 }
 
@@ -481,19 +430,20 @@ impl PartialEq for Coordinate {
 ///
 /// ```
 /// use geoms::{coord, coordinate::{Coordinate}};
-/// let coord = coord!(10.0, 20.0);
-/// assert_eq!(coord, Coordinate::TwoDim { x: 10.0, y: 20.0 });
+/// let coord = coord!(10, 20.0);
+/// assert_eq!(coord, Coordinate::new(10.0, 20.0, 0.0));
 ///
-/// let coord = coord!(10.0, 20.0, 30.0 );
-/// assert_eq!(coord, Coordinate::ThreeDim { x: 10.0, y: 20.0, z: 30.0 });
+/// let coord = coord!(10.0, 20, 30.0 );
+/// assert_eq!(coord, Coordinate::new(10.0, 20.0, 30.0));
 /// ```
+
 #[macro_export]
 macro_rules! coord {    
     ( $x:expr, $y:expr ) => {
-        Coordinate::TwoDim { x: $x, y: $y }
+        Coordinate::new($x as f64, $y as f64, 0.0)
     };
     ( $x:expr, $y:expr, $z:expr ) => {
-        Coordinate::ThreeDim { x: $x, y: $y, z: $z }
+        Coordinate::new($x as f64, $y as f64, $z as f64)
     };
 }
  
