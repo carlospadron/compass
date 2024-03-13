@@ -1,1 +1,1 @@
-- add cord macro
+- do we need coordsequences? for duplicated coords and unclosed coord sequences?
