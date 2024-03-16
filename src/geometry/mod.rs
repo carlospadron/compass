@@ -30,6 +30,7 @@ pub trait Geometry {
     fn difference(&self, other: &dyn Geometry) -> &dyn Geometry;
     fn convex_hull(&self) -> &dyn Geometry;
     fn intersection(&self, other: &dyn Geometry) -> &dyn Geometry;
+    fn normalize(&self) -> &dyn Geometry;
     fn reverse(&self) -> &dyn Geometry;
     fn simplify(&self, tolerance: f64) -> &dyn Geometry;    
     fn sym_difference(&self, other: &dyn Geometry) -> &dyn Geometry;    
