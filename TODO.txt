@@ -1,3 +1,4 @@
 - do coordinates need dimension methods?
 - do we need coordsequences? for duplicated coords and unclosed coord sequences?
 - check geometry methods against geos, shapely
+- do we need squares and hexagons functions?
