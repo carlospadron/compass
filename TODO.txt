@@ -1,3 +1,6 @@
+- examples for partialeq in geometry trait
+- finish point
+- evaluate the content of examples.txt
 - do coordinates need dimension methods?
 - do we need coordsequences? for duplicated coords and unclosed coord sequences?
 - check geometry methods against geos, shapely
