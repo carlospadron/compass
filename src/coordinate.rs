@@ -3,7 +3,7 @@ use std::fmt;
 
 /// Represents a coordinate in 3D space.
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Coordinate {
     /// The x value of the coordinate.
     x: f64,
@@ -149,6 +149,7 @@ impl Coordinate {
     ///
     /// let coordinate = Coordinate::new(3.0, 4.0, 5.0);
     /// let new_coordinate = coordinate.set_x(6.0);
+    /// 
     /// assert_eq!(new_coordinate.x(), 6.0);
     /// assert_eq!(new_coordinate.y(), 4.0);
     /// assert_eq!(new_coordinate.z(), 5.0);
@@ -279,30 +280,6 @@ impl Coordinate {
         && (self.y() - other.y()).abs() - tolerance < f64::EPSILON
     }
 
-    /// Checks if the coordinates are equal.
-    ///
-    /// # Arguments
-    ///
-    /// * `self` - The first coordinate.
-    /// * `other` - The second coordinate.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use geoms::coordinate::Coordinate;
-    ///
-    /// let coordinate1 = Coordinate::new(1.0, 2.0, 3.0);
-    /// let coordinate2 = Coordinate::new(1.0, 2.0, 3.0);
-    /// assert!(coordinate1.equals(&coordinate2));
-    ///
-    /// let coordinate1 = Coordinate::new(1.0, 2.0, 3.0);
-    /// let coordinate2 = Coordinate::new(3.0, 2.0, 3.0);
-    /// assert!(!coordinate1.equals(&coordinate2));
-    /// ```
-    pub fn equals(&self, other: &Coordinate) -> bool {
-        self.equals_2d(other) && self.z() == other.z()
-    }
-
     /// Checks if the coordinates are equal within a given tolerance.
     ///
     /// # Arguments
@@ -374,50 +351,6 @@ impl Coordinate {
 
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}, {}, {})", self.x(), self.y(), self.z())
-    }
-}
-
-/// Implements the `PartialEq` trait for the `Coordinate` struct.
-/// This allows for comparing two `Coordinate` instances for equality.
-impl PartialEq for Coordinate {
-    /// Compares two `Coordinate` instances for equality.
-    ///
-    /// # Arguments
-    ///
-    /// * `other` - The other `Coordinate` instance to compare with.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use geoms::coordinate::Coordinate;
-    ///
-    /// let coord1 = Coordinate::new(1.0, 2.0, 3.0);
-    /// let coord2 = Coordinate::new(1.0, 2.0, 3.0);
-    ///
-    /// assert!(coord1 == coord2);   
-    /// ```
-    fn eq(&self, other: &Self) -> bool {
-        self.equals(other)
-    }
-
-    /// Compares two `Coordinate` instances for inequality.
-    ///
-    /// # Arguments
-    ///
-    /// * `other` - The other `Coordinate` instance to compare with.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use geoms::coordinate::Coordinate;
-    ///
-    /// let coord1 = Coordinate::new(1.0, 2.0, 3.0);
-    /// let coord2 = Coordinate::new(1.0, 5.0, 3.0);
-    ///
-    /// assert!(coord1 != coord2);
-    /// ```
-    fn ne(&self, other: &Self) -> bool {
-        !self.equals(other)
     }
 }
 
