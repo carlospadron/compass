@@ -1,5 +1,6 @@
 use std::cmp::PartialEq;
 use std::fmt;
+use std::hash::{Hash, Hasher};
 
 /// Represents a coordinate in 3D space.
 
@@ -351,6 +352,19 @@ impl Coordinate {
 
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}, {}, {})", self.x(), self.y(), self.z())
+    }
+}
+
+/// Implements the equality operator for the Coordinate struct.
+/// As coordinate does not allow NaN or infinite values, it is safe to compare the coordinates directly.
+impl Eq for Coordinate {}
+
+/// Implements the hash trait for the Coordinate struct.
+impl Hash for Coordinate {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.x.to_bits().hash(state);
+        self.y.to_bits().hash(state);
+        self.z.to_bits().hash(state);
     }
 }
 

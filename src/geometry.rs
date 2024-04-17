@@ -2,7 +2,7 @@ use std::{collections::HashSet, f64::consts::E};
 
 use crate::coordinate::Coordinate;
 
-enum Geometry {
+pub enum Geometry {
     Point { coordinates: Coordinate },
     LineString { coordinates: Vec<Coordinate> },
     LinearRing { coordinates: Vec<Coordinate> },
@@ -17,51 +17,72 @@ enum Geometry {
 impl Geometry {
     //predicates
 
-    ///// Returns true if the geometry is a simple geometry
-    ///// A simple geometry is one that has no anomalous geometric points, such as self intersection or self tangency.
-    // fn is_simple(&self) -> bool {
+    /// Returns true if the geometry is a simple geometry
+    /// A simple geometry is one that has no anomalous geometric points, such as self intersection or self tangency.
+    ///
+    /// # Examples
+    /// ```
+    /// use geoms::geometry::Geometry;
+    /// use geoms::coordinate::Coordinate;
+    /// use geoms::coord;
+    /// 
+    /// let point = Geometry::Point { coordinates: coord!(0, 0) };
+    /// assert!(point.is_simple());
+    /// 
+    /// let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(2, 2)] };
+    /// assert!(line.is_simple());
+    /// 
+    /// let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(0, 0)] };
+    /// assert!(line.is_simple());
+    /// 
+    /// let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(1, 1)] };
+    /// assert!(line.is_simple());
+    /// ```
+    pub fn is_simple(&self) -> bool {
     
-    //     //helper function that checks if a set of coordinates are simple
-    //     fn is_simple_coordinates(coordinates: &Vec<Coordinate>, initial: Coordinate, set: HashSet<Coordinate>, state: bool) -> bool {
-    //         let mut coords = coordinates.iter();
-    //         let initial = coords.next().unwrap();
-    //         let mut set = HashSet::new();
-    //         set.insert(initial);
-    //         let mut state = true;
+        //helper function that checks if a set of coordinates are simple
+        fn is_simple_coordinates(coordinates: &Vec<Coordinate>) -> bool {
+            let mut coords = coordinates.iter();
+            let mut set: HashSet<&Coordinate> = HashSet::new();
+            let mut state = true;
 
-    //         fn loop_aux() -> bool {
-    //             match coordinates.next() {
-    //                 Some(coordinate) => {
-    //                     if !state { 
-    //                         state 
-    //                     }
-    //                     else if !set.insert(coordinate) {
-    //                         false
-    //                     }
-    //                     else {
-    //                         loop_aux();
-    //                     }
-    //                 },
-    //                 None => state
-    //             }
-    //         }
-    //         loop_aux();
-    //         state
+            //check if it is contained in the set, if it is, state is false
+            loop {
+                match coords.next() {
+                    Some(coordinate) => {
+                        //if the previous state was false, and it is not the end of the loop, return false
+                        if !state { 
+                            break false;
+                        }
+                        //check if the coordinate is in the set, if it is, change state to false
+                        else if set.contains(&coordinate) {
+                            state = false;
+                        }
+                        //add the coordinate to the set
+                        else {
+                            set.insert(coordinate);
+                        }
+                    },
+                    //if it reaches the end, and state is false, check if the first and last coordinates are the same...
+                    None => break true
+                }
+            }
 
-    //     }
+        }
 
-    //     match self {
-    //         //points are always simple
-    //         Geometry::Point { .. } => true,
-    //         //lines are simple if they have no self intersections. 
-    //         //Meaning, the only duplicate coordinates are the first and last.
-    //         _ => false,
+        match self {
+            //points are always simple
+            Geometry::Point { .. } => true,
+            //lines are simple if they have no self intersections. 
+            Geometry::LineString { coordinates } => is_simple_coordinates(coordinates),
+            //Meaning, the only duplicate coordinates are the first and last.
+            _ => false,
+        }
 
-    //     }
-    // }
+    }
     // //accessors
     // fn boundary(&self) -> &dyn Geometry;
-    // fn coordinates(&self) -> Vec<Coordinate>;
+    // fn coordinates(&self) -> Vec<Coordinate>; //this might not be needed as every type has a different construct of coordinates
     // fn dimension(&self) -> i32;
     // fn envelope(&self) -> &dyn Geometry;
     // //constructive methods
