@@ -1,4 +1,4 @@
-use std::{collections::HashSet, f64::consts::E};
+use std::collections::HashSet;
 
 use crate::coordinate::Coordinate;
 
@@ -36,6 +36,14 @@ impl Geometry {
     /// assert!(line.is_simple());
     /// 
     /// let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(1, 1)] };
+    /// assert!(!line.is_simple());
+    /// 
+    /// let line = Geometry::LineString { coordinates: vec![coord!(1, 1), coord!(1, 1), coord!(0, 0)] };
+    /// assert!(!line.is_simple());
+    /// 
+    ///  //very very long line with no self intersection
+    /// let coordinates: Vec<Coordinate> = (0..=100_000_000).map(|i| coord!(i, i)).collect();
+    /// let line = Geometry::LineString { coordinates };
     /// assert!(line.is_simple());
     /// ```
     pub fn is_simple(&self) -> bool {
@@ -43,7 +51,9 @@ impl Geometry {
         //helper function that checks if a set of coordinates are simple
         fn is_simple_coordinates(coordinates: &Vec<Coordinate>) -> bool {
             let mut coords = coordinates.iter();
+            let initial = coords.next().unwrap();
             let mut set: HashSet<&Coordinate> = HashSet::new();
+            let mut initial_state = true;
             let mut state = true;
 
             //check if it is contained in the set, if it is, state is false
@@ -51,20 +61,26 @@ impl Geometry {
                 match coords.next() {
                     Some(coordinate) => {
                         //if the previous state was false, and it is not the end of the loop, return false
-                        if !state { 
+                        if !state || !initial_state { 
                             break false;
                         }
-                        //check if the coordinate is in the set, if it is, change state to false
-                        else if set.contains(&coordinate) {
+                        //check against the initial coordinate
+                        else if initial == coordinate {
+                            initial_state = false;
+                        }                       
+                        //add the coordinate to the set,if it is already in the set, state is false
+                        else if !set.insert(coordinate) {
                             state = false;
                         }
-                        //add the coordinate to the set
-                        else {
-                            set.insert(coordinate);
-                        }
                     },
-                    //if it reaches the end, and state is false, check if the first and last coordinates are the same...
-                    None => break true
+                    //if it reaches the end, and state is false, check if the first and last coordinates are the same
+                    None => {
+                        if !state {
+                            break false;
+                        } else {
+                            break true;
+                        }
+                    }           
                 }
             }
 
@@ -74,7 +90,7 @@ impl Geometry {
             //points are always simple
             Geometry::Point { .. } => true,
             //lines are simple if they have no self intersections. 
-            Geometry::LineString { coordinates } => is_simple_coordinates(coordinates),
+            Geometry::LineString { coordinates } => is_simple_coordinates(&coordinates),
             //Meaning, the only duplicate coordinates are the first and last.
             _ => false,
         }
@@ -143,12 +159,40 @@ impl Geometry {
     // //gml methods
     // fn as_gml(&self) -> String;
     // fn from_gml(&self, gml: &str) -> &dyn Geometry;
-
 }
 
+//tests
+#[cfg(test)]
+pub mod tests {
+    use super::*;
+    use crate::coord;
+
+    #[test]
+    pub fn test_is_simple() {
+        let point = Geometry::Point { coordinates: coord!(0, 0) };
+        assert!(point.is_simple());
+
+        //no self intersections
+        let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(2, 2)] };
+        assert!(line.is_simple());
+
+        //no self intersections, closed line
+        let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(0, 0)] };
+        assert!(line.is_simple());
+
+        //self intersection at the end
+        let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(1, 1)] };
+        assert!(!line.is_simple());
+
+        //self intersection at the beginning
+        let line = Geometry::LineString { coordinates: vec![coord!(1, 1), coord!(1, 1), coord!(0, 0)] };
+        assert!(!line.is_simple());
+
+        //very very long line with no self intersection
+        let coordinates: Vec<Coordinate> = (0..=10_000_000).map(|i| coord!(i, i)).collect();
+        let line = Geometry::LineString { coordinates };
+        assert!(line.is_simple());
 
 
-
-
-
-
+    }
+}
