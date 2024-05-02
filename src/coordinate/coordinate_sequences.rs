@@ -5,7 +5,17 @@ pub struct CoordinateSequence {
 }
 
 impl CoordinateSequence {
-
+    /// Creates a new CoordinateSequence
+    /// 
+    /// # Examples
+    /// ```
+    /// use geoms::coord;
+    /// use geoms::coordinate::Coordinate;
+    /// use geoms::coordinate::coordinate_sequences::CoordinateSequence;
+    /// 
+    /// let coordinates = vec![coord!(0, 0), coord!(1, 1), coord!(2, 2)];
+    /// let sequence = CoordinateSequence::new(coordinates);
+    /// ```
     pub fn new(coordinates: Vec<Coordinate>) -> Self {
         Self { coordinates }
     }
@@ -34,9 +44,9 @@ impl CoordinateSequence {
         self.coordinates.push(coordinate);
     }
 
-    pub fn remove_coordinate(&mut self, index: usize) -> Option<Coordinate> {
-        self.coordinates.remove(index)
-    }
+    // pub fn remove_coordinate(&mut self, index: usize) -> Option<Coordinate> {
+    //     self.coordinates.remove(index)
+    // }
 
     pub fn len(&self) -> usize {
         self.coordinates.len()
