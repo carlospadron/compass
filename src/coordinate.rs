@@ -2,6 +2,8 @@ use std::cmp::PartialEq;
 use std::fmt;
 use std::hash::{Hash, Hasher};
 
+pub mod coordinate_sequences;
+
 /// Represents a coordinate in 3D space.
 
 #[derive(Debug, PartialEq)]
@@ -51,7 +53,7 @@ impl Coordinate {
             panic!("Coordinate values cannot be infinite");
             
         }
-        Coordinate { x, y, z }
+        Self { x, y, z }
     }
 
     /// Returns the x value of the coordinate.

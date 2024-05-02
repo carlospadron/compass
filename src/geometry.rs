@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use crate::coordinate::Coordinate;
 
 pub enum Geometry {
@@ -29,75 +27,89 @@ impl Geometry {
     /// let point = Geometry::Point { coordinates: coord!(0, 0) };
     /// assert!(point.is_simple());
     /// 
+    /// //no self intersections
     /// let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(2, 2)] };
     /// assert!(line.is_simple());
     /// 
+    /// //no self intersections, closed line
     /// let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(0, 0)] };
     /// assert!(line.is_simple());
     /// 
+    /// //self intersection at the end
     /// let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(1, 1)] };
     /// assert!(!line.is_simple());
     /// 
+    /// //self intersection at the beginning
     /// let line = Geometry::LineString { coordinates: vec![coord!(1, 1), coord!(1, 1), coord!(0, 0)] };
     /// assert!(!line.is_simple());
     /// 
-    ///  //very very long line with no self intersection
-    /// let coordinates: Vec<Coordinate> = (0..=100_000_000).map(|i| coord!(i, i)).collect();
-    /// let line = Geometry::LineString { coordinates };
-    /// assert!(line.is_simple());
     /// ```
     pub fn is_simple(&self) -> bool {
-    
-        //helper function that checks if a set of coordinates are simple
-        fn is_simple_coordinates(coordinates: &Vec<Coordinate>) -> bool {
-            let mut coords = coordinates.iter();
-            let initial = coords.next().unwrap();
-            let mut set: HashSet<&Coordinate> = HashSet::new();
-            let mut initial_state = true;
-            let mut state = true;
+        unimplemented!()
+        //the code below only looks for duplicated vertices, it does not check for self intersections :(
+        // //helper function that checks if a set of coordinates are simple
+        // fn is_simple_coordinates(coordinates: &Vec<Coordinate>) -> bool {
+        //     let mut coords = coordinates.iter();
+        //     let initial = coords.next().unwrap();
+        //     let mut set: HashSet<&Coordinate> = HashSet::new();
+        //     let mut initial_state = true;
+        //     let mut state = true;
 
-            //check if it is contained in the set, if it is, state is false
-            loop {
-                match coords.next() {
-                    Some(coordinate) => {
-                        //if the previous state was false, and it is not the end of the loop, return false
-                        if !state || !initial_state { 
-                            break false;
-                        }
-                        //check against the initial coordinate
-                        else if initial == coordinate {
-                            initial_state = false;
-                        }                       
-                        //add the coordinate to the set,if it is already in the set, state is false
-                        else if !set.insert(coordinate) {
-                            state = false;
-                        }
-                    },
-                    //if it reaches the end, and state is false, check if the first and last coordinates are the same
-                    None => {
-                        if !state {
-                            break false;
-                        } else {
-                            break true;
-                        }
-                    }           
-                }
-            }
+        //     //check if it is contained in the set, if it is, state is false
+        //     loop {
+        //         match coords.next() {
+        //             Some(coordinate) => {
+        //                 //if the previous state was false, and it is not the end of the loop, return false
+        //                 if !state || !initial_state { 
+        //                     break false;
+        //                 }
+        //                 //check against the initial coordinate
+        //                 else if initial == coordinate {
+        //                     initial_state = false;
+        //                 }                       
+        //                 //add the coordinate to the set,if it is already in the set, state is false
+        //                 else if !set.insert(coordinate) {
+        //                     state = false;
+        //                 }
+        //             },
+        //             //if it reaches the end, and state is false, check if the first and last coordinates are the same
+        //             None => {
+        //                 if !state {
+        //                     break false;
+        //                 } else {
+        //                     break true;
+        //                 }
+        //             }           
+        //         }
+        //     }
 
-        }
+        // }
 
-        match self {
-            //points are always simple
-            Geometry::Point { .. } => true,
-            //lines are simple if they have no self intersections. 
-            Geometry::LineString { coordinates } => is_simple_coordinates(&coordinates),
-            //Meaning, the only duplicate coordinates are the first and last.
-            _ => false,
-        }
+        // match self {
+        //     //points are always simple
+        //     Geometry::Point { .. } => true,
+        //     //lines are simple if they have no self intersections. The only duplicate coordinates are the first and last.
+        //     Geometry::LineString { coordinates } => is_simple_coordinates(&coordinates),
+        //     //Meaning, 
+        //     _ => false,
+        // }
 
     }
-    // //accessors
-    // fn boundary(&self) -> &dyn Geometry;
+    //accessors
+    // fn boundary(&self) -> Option<Geometry> {
+    //     match self {
+    //         //points have no boundary
+    //         Geometry::Point { .. } => None,
+    //         //lines have as boundary the first and last points
+    //         Geometry::LineString { coordinates } => {
+    //             let mut coords = coordinates.iter();
+    //             let first = *coords.next().unwrap();
+    //             let last = *coords.last().unwrap();
+    //             Some(Geometry::MultiPoint { coordinates: vec![first.clone(), last.clone()] })
+    //         },
+    //         _ => None,
+    //     } 
+    // }
     // fn coordinates(&self) -> Vec<Coordinate>; //this might not be needed as every type has a different construct of coordinates
     // fn dimension(&self) -> i32;
     // fn envelope(&self) -> &dyn Geometry;

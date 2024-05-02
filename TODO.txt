@@ -1,7 +1,10 @@
-- examples for partialeq in geometry trait
-- finish point
+- implement clone for coordinates
+- is there an scenario where linestrings return no boundary?
+- complete methods in geometry
+- check that lines have at least 2 points
 - evaluate the content of examples.txt
 - do coordinates need dimension methods?
 - do we need coordsequences? for duplicated coords and unclosed coord sequences?
 - check geometry methods against geos, shapely
 - do we need squares and hexagons functions?
+- parallel versions of the methods in geometry
