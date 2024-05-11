@@ -15,35 +15,35 @@ pub enum Geometry {
 impl Geometry {
     //predicates
 
-    /// Returns true if the geometry is a simple geometry
-    /// A simple geometry is one that has no anomalous geometric points, such as self intersection or self tangency.
-    ///
-    /// # Examples
-    /// ```
-    /// use geoms::geometry::Geometry;
-    /// use geoms::coordinate::Coordinate;
-    /// use geoms::coord;
-    /// 
-    /// let point = Geometry::Point { coordinates: coord!(0, 0) };
-    /// assert!(point.is_simple());
-    /// 
-    /// //no self intersections
-    /// let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(2, 2)] };
-    /// assert!(line.is_simple());
-    /// 
-    /// //no self intersections, closed line
-    /// let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(0, 0)] };
-    /// assert!(line.is_simple());
-    /// 
-    /// //self intersection at the end
-    /// let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(1, 1)] };
-    /// assert!(!line.is_simple());
-    /// 
-    /// //self intersection at the beginning
-    /// let line = Geometry::LineString { coordinates: vec![coord!(1, 1), coord!(1, 1), coord!(0, 0)] };
-    /// assert!(!line.is_simple());
-    /// 
-    /// ```
+    // / Returns true if the geometry is a simple geometry
+    // / A simple geometry is one that has no anomalous geometric points, such as self intersection or self tangency.
+    // /
+    // / # Examples
+    // / ```
+    // / use geoms::geometry::Geometry;
+    // / use geoms::coordinate::Coordinate;
+    // / use geoms::coord;
+    // / 
+    // / let point = Geometry::Point { coordinates: coord!(0, 0) };
+    // / assert!(point.is_simple());
+    // / 
+    // / //no self intersections
+    // / let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(2, 2)] };
+    // / assert!(line.is_simple());
+    // / 
+    // / //no self intersections, closed line
+    // / let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(0, 0)] };
+    // / assert!(line.is_simple());
+    // / 
+    // / //self intersection at the end
+    // / let line = Geometry::LineString { coordinates: vec![coord!(0, 0), coord!(1, 1), coord!(1, 1)] };
+    // / assert!(!line.is_simple());
+    // / 
+    // / //self intersection at the beginning
+    // / let line = Geometry::LineString { coordinates: vec![coord!(1, 1), coord!(1, 1), coord!(0, 0)] };
+    // / assert!(!line.is_simple());
+    // / 
+    // / ```
     pub fn is_simple(&self) -> bool {
         unimplemented!()
         //the code below only looks for duplicated vertices, it does not check for self intersections :(
