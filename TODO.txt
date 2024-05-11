@@ -1,3 +1,4 @@
+- implement dimension for coord seq
 - implement clone for coordinates
 - is there an scenario where linestrings return no boundary?
 - complete methods in geometry
