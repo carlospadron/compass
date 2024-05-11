@@ -6,7 +6,7 @@ pub mod coordinate_sequences;
 
 /// Represents a coordinate in 3D space.
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Coordinate {
     /// The x value of the coordinate.
     x: f64,
