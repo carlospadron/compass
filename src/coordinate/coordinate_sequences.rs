@@ -1,5 +1,6 @@
 use crate::coordinate::Coordinate;
 
+#[derive(Clone)]
 pub struct CoordinateSequence {
     coordinates: Vec<Coordinate>,
 }
@@ -20,28 +21,61 @@ impl CoordinateSequence {
         Self { coordinates }
     }
 
+    /// Returns the coordinates of the sequence
+    /// 
+    /// # Examples
+    /// ```
+    /// use geoms::coord;
+    /// use geoms::coordinate::Coordinate;
+    /// use geoms::coordinate::coordinate_sequences::CoordinateSequence;
+    /// 
+    /// let coordinates = vec![coord!(0, 0), coord!(1, 1), coord!(2, 2)];
+    /// let sequence = CoordinateSequence::new(coordinates);
+    /// assert_eq!(sequence.get_coordinates(), &vec![coord!(0, 0), coord!(1, 1), coord!(2, 2)]);
+    /// ```
     pub fn get_coordinates(&self) -> &Vec<Coordinate> {
         &self.coordinates
     }
 
-    pub fn get_coordinates_mut(&mut self) -> &mut Vec<Coordinate> {
-        &mut self.coordinates
-    }
-
+    /// Returns the coordinate at the given index
+    /// 
+    /// # Examples
+    /// ```
+    /// use geoms::coord;
+    /// use geoms::coordinate::Coordinate;
+    /// use geoms::coordinate::coordinate_sequences::CoordinateSequence;
+    /// 
+    /// let coordinates = vec![coord!(0, 0), coord!(1, 1), coord!(2, 2)];
+    /// let sequence = CoordinateSequence::new(coordinates);
+    /// assert_eq!(sequence.get_coordinate(1), Some(&coord!(1, 1)));
+    /// ```
     pub fn get_coordinate(&self, index: usize) -> Option<&Coordinate> {
         self.coordinates.get(index)
     }
 
-    pub fn get_coordinate_mut(&mut self, index: usize) -> Option<&mut Coordinate> {
-        self.coordinates.get_mut(index)
+    /// Sets the coordinate at the given index
+    /// 
+    /// # Examples
+    /// ```
+    /// use geoms::coord;
+    /// use geoms::coordinate::Coordinate;
+    /// use geoms::coordinate::coordinate_sequences::CoordinateSequence;
+    /// 
+    /// let coordinates = vec![coord!(0, 0), coord!(1, 1), coord!(2, 2)];
+    /// let sequence = CoordinateSequence::new(coordinates);
+    /// let new_sequence = sequence.set_coordinate(1, coord!(3, 3));
+    /// assert_eq!(new_sequence.get_coordinate(1), Some(&coord!(3, 3)));
+    /// ```
+    pub fn set_coordinate(&self, index: usize, coordinate: Coordinate) -> Self {
+        let mut new_sequence = self.clone();
+        new_sequence.coordinates[index] = coordinate;
+        new_sequence
     }
 
-    pub fn set_coordinate(&mut self, index: usize, coordinate: Coordinate) {
-        self.coordinates[index] = coordinate;
-    }
-
-    pub fn add_coordinate(&mut self, coordinate: Coordinate) {
-        self.coordinates.push(coordinate);
+    pub fn add_coordinate(&self, coordinate: Coordinate) -> Self {
+        let mut new_sequence = self.clone();
+        new_sequence.coordinates.push(coordinate);
+        new_sequence
     }
 
     // pub fn remove_coordinate(&mut self, index: usize) -> Option<Coordinate> {
